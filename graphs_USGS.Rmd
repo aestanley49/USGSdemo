@@ -1,0 +1,109 @@
+---
+title: "USGS_onepgbriefgraph"
+author: "Annabelle"
+date: "11/25/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#load in data
+```{r}
+articles <- read.csv("/Users/annabellestanley/Downloads/DenverPost_BureauofLandManagement_search-1-1-2015to12-31-2019.csv")
+```
+
+graph options
+```{r}
+
+articles[which(articles$Month == 1),4] <- "January"
+articles[which(articles$Month == 2),4] <- "February "
+articles[which(articles$Month == 3),4] <- "March"
+articles[which(articles$Month == 4),4] <- "April"
+articles[which(articles$Month == 5),4] <- "May"
+articles[which(articles$Month == 6),4] <- "June"
+articles[which(articles$Month == 7),4] <- "July"
+articles[which(articles$Month == 8),4] <- "August"
+articles[which(articles$Month == 9),4] <- "September"
+articles[which(articles$Month == 10),4] <- "October"
+articles[which(articles$Month == 11),4] <- "November"
+articles[which(articles$Month == 12),4] <- "December"
+
+year <- articles %>% group_by(Year)
+month <- articles %>% group_by(Month)
+combo <- articles %>% group_by(Year, Month)
+
+
+year1 <- (articles %>% group_by(Year)  
+%>% summarise(n()))    
+
+month1 <- (articles %>% group_by(Month)   #selecting  each species
+%>% summarise(n()))  
+
+ggplot(year) + geom_bar(mapping = aes(x = Year, y = count), stat = "identity")+ theme(axis.text.x = element_text(angle = 90)) + scale_x_discrete(name ="Name of Action")
+
+ggplot(data = explore, mapping = aes(x=rssum)) + geom_bar() + scale_x_continuous(name ="Number of Partners", limits=c(-1,175)) + scale_y_continuous(name ="Frequency", limits=c(0,50)) + ggtitle("Histogram of the number of partnerships/parnter original data")
+
+
+
+## writing graphs to jpg
+
+ggsave(filename = "USGSyear.jpg", plot = myPlot)
+myPlot <- ggplot(data = year, mapping = aes(x=Year)) + geom_bar() + scale_y_continuous(name ="Number of Articles") + ggtitle("The Number of Denver Post Articles per Year") +theme(axis.title.x = element_blank())
+
+ggsave(filename = "USGSmonth2.jpg", plot = myPlot)
+myPlot <- ggplot(data = month, mapping = aes(x=Month, fill = "blue")) + geom_bar() + theme(axis.text.x = element_text(angle = -45)) + scale_y_continuous(name ="Frequency") + ggtitle("The Number of Denver Post Articles per Month Across all Five Years") +theme(axis.title.x = element_blank())
+
+myPlot <- ggplot(data = month, mapping = aes(x=Month)) + geom_bar() + scale_y_continuous(name ="Frequency") + ggtitle("The Number of Denver Post Articles per Month") + scale_x_discrete(limits = c(1:12)) +theme(axis.title.x = element_blank())
+
+aanames <- c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
+
+
+ggsave(filename = "USGSyearmonth.jpg", plot = myPlot)
+myPlot <- ggplot(data = combo, mapping = aes(x=Year, fill = Month)) + geom_bar() + scale_y_continuous(name ="Frequency") + ggtitle("The Number of Denver Post Articles per Year per Month")
+
+```
+
+
+
+
+
+```{r}
+
+############ dev.off was being weird so ignore what is below this line
+#write to jpeg
+jpeg(file = "/Users/annabellestanley/Downloads/USGSyear.jpg")
+ggplot(data = year, mapping = aes(x=Year)) + geom_bar() + scale_y_continuous(name ="Frequency") + ggtitle("The Number of Denver Post Articles per Year")
+dev.off()
+
+ggplot(data = month, mapping = aes(x=Month)) + geom_bar() + theme(axis.text.x = element_text(angle = -45)) + scale_y_continuous(name ="Frequency") + ggtitle("The Number of Denver Post Articles per Month")
+
+#write to jpeg
+jpeg(file = "Downloads/USGSyear.jpg")
+
+
+myPlot <- ggplot(data = month, mapping = aes(x=Month)) + geom_bar() + theme(axis.text.x = element_text(angle = -45)) + scale_y_continuous(name ="Frequency") + ggtitle("The Number of Denver Post Articles per Month")
+
+dev.off()
+
+savePlot <- function(myPlot) {
+  jpeg("myPlot.jpg")
+  print(myPlot)
+  dev.off
+}
+
+ggplot(data = combo, mapping = aes(x=Year, fill = Month)) + geom_bar() + scale_y_continuous(name ="Frequency") + ggtitle("The Number of Denver Post Articles per Year per Month")
+
+
+
+#write to jpeg
+jpeg(file = "Downloads/USGSyearmonth.jpg")
+ggplot(data = combo, mapping = aes(x=Year, fill = Month)) + geom_bar() + scale_y_continuous(name ="Frequency") + ggtitle("The Number of Denver Post Articles per Year per Month")
+dev.off()
+
+
+names <- c("January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December")
+
+```
+
